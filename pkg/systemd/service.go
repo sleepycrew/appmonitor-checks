@@ -1,6 +1,7 @@
 package systemd
 
 import (
+	"fmt"
 	"context"
 	"errors"
 	"github.com/coreos/go-systemd/v22/dbus"
@@ -43,7 +44,7 @@ func (s Service) RunCheck(result chan<- check.Result) {
 
 	result <- check.Result{
 		Result: code,
-		Value:  "idk I am just a string, how should I know?",
+		Value: fmt.Sprintf("unit %v is %v", unitNames[0], units[0].SubState),
 	}
 }
 
@@ -55,11 +56,11 @@ func (s ServiceFactory) GetName() string {
 }
 
 func (s ServiceFactory) BuildCheck(input map[string]string) (check.Check, error) {
-	name, ok := input["name"]
+	name, ok := input["Name"]
 	if !ok {
 		return nil, errors.New("variable name not specified in input")
 	}
-	status, ok := input["status"]
+	status, ok := input["Status"]
 	if !ok {
 		return nil, errors.New("variable status not specified in input")
 	}

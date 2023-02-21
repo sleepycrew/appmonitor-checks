@@ -4,6 +4,7 @@ import (
 	"github.com/sleepycrew/appmonitor-checks/check"
 	"os"
 	"plugin"
+	"encoding/json"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 		panic(err)
 	}
 	printInfo(p)
-	runCheck(p)
+	runCheck(p, args[2])
 }
 
 func printInfo(p *plugin.Plugin) {
@@ -25,16 +26,21 @@ func printInfo(p *plugin.Plugin) {
 	printInfo.(func())()
 }
 
-func runCheck(p *plugin.Plugin) {
+func runCheck(p *plugin.Plugin, jsonStr string) {
 	checks, err := p.Lookup("Checks")
 	if err != nil {
 		panic(err)
 	}
-	input := map[string]string{"name": "nginx", "status": "running"}
-	c, err := checks.([]check.Factory)[0].BuildCheck(input)
+	input := map[string]string{}
+    	json.Unmarshal([]byte(jsonStr), &input)
+	c, err := checks.(*[1]check.Factory)[0].BuildCheck(input)
+	if err != nil {
+		panic(err)
+	}
+
 	channel := make(chan check.Result)
 	go c.RunCheck(channel)
 	result := <-channel
 	println(result.Value)
-	println(result.Value)
+	os.Exit(int(result.Result))
 }
