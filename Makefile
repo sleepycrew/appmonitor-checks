@@ -1,5 +1,6 @@
 SOURCES := $(wildcard ./*.go)
 
+
 .Phony: clean
 
 build/systemd.so: $(SOURCES)

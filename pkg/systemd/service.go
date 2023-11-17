@@ -1,11 +1,12 @@
 package systemd
 
 import (
-	"fmt"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/sleepycrew/appmonitor-checks/check"
+	"log"
 )
 
 type Service struct {
@@ -30,7 +31,7 @@ func (s Service) RunCheck(result chan<- check.Result) {
 			Value:  "Could retrieve units",
 		}
 	}
-
+	log.Println(units)
 	// TODO handle activeState and substate
 	// TODO proper result
 	statusMatch := units[0].SubState == s.Status
@@ -44,7 +45,7 @@ func (s Service) RunCheck(result chan<- check.Result) {
 
 	result <- check.Result{
 		Result: code,
-		Value: fmt.Sprintf("unit %v is %v", unitNames[0], units[0].SubState),
+		Value:  fmt.Sprintf("unit %v is %v", unitNames[0], units[0].SubState),
 	}
 }
 

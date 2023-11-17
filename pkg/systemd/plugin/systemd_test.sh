@@ -1,12 +1,33 @@
 #! /bin/sh
 
-testService() {
-  docker build pkg/systemd/plugin -t amc-sysd
-  container_name=$(docker run -d amc-sysd)
-  docker cp ./ $container_name:/root/checks
-  docker exec $container_name systemctl start nginx
-  docker exec $container_name cd /root/checks && make 
-  docker exec $container_name go run /root/checks/cmd/run-checks 
+UUID=$(uuidgen)
+CONTAINER_NAME="amc-sysd-$UUID"
+
+oneTimeSetUp() {
+  # setup container
+  lxc launch images:debian/bookworm $CONTAINER_NAME
+  lxc exec $CONTAINER_NAME -- apt-get update > /dev/null
+  lxc exec $CONTAINER_NAME -- apt-get install -y golang make ca-certificates mpd > /dev/null
+  lxc exec $CONTAINER_NAME -- mkdir -p /root/amc > /dev/null
+  lxc file push -r ./ $CONTAINER_NAME/root/amc > /dev/null
+  lxc exec $CONTAINER_NAME --cwd /root/amc -- make clean > /dev/null
+  lxc exec $CONTAINER_NAME --cwd /root/amc -- make > /dev/null
+}
+
+oneTimeTearDown() {
+  lxc stop $CONTAINER_NAME
+  lxc delete $CONTAINER_NAME
+  echo "done" > /dev/null
+}
+
+testServiceRunning() {
+  lxc exec $CONTAINER_NAME --cwd /root/amc --cwd /root/amc -- go run ./cmd/run-check /root/amc/build/systemd.so  '{"Name":"systemd-udevd.service", "Status": "running"}'
+}
+
+
+testServiceNotRunning() {
+  lxc exec $CONTAINER_NAME --cwd /root/amc --cwd /root/amc -- go run ./cmd/run-check /root/amc/build/systemd.so  '{"Name":"mpd.service", "Status": "running"}'
+  assertSame "1" "$?"
 }
 
 # Load shUnit2.
