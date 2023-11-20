@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/sleepycrew/appmonitor-checks/check"
+	"encoding/json"
+	"github.com/sleepycrew/appmonitor-checks/internal/plugins"
+	"github.com/sleepycrew/appmonitor-client/pkg/check"
 	"os"
 	"plugin"
-	"encoding/json"
 )
 
 func main() {
@@ -14,6 +15,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	if !IsJSON(args[2]) {
+		panic("Input is not valid JSON")
+	}
+
 	printInfo(p)
 	runCheck(p, args[2])
 }
@@ -31,9 +37,7 @@ func runCheck(p *plugin.Plugin, jsonStr string) {
 	if err != nil {
 		panic(err)
 	}
-	input := map[string]string{}
-    	json.Unmarshal([]byte(jsonStr), &input)
-	c, err := checks.(*[1]check.Factory)[0].BuildCheck(input)
+	c, err := checks.(*[1]plugins.CheckFactory)[0].BuildCheck(jsonStr)
 	if err != nil {
 		panic(err)
 	}
@@ -43,4 +47,9 @@ func runCheck(p *plugin.Plugin, jsonStr string) {
 	result := <-channel
 	println(result.Value)
 	os.Exit(int(result.Result))
+}
+
+func IsJSON(str string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
 }

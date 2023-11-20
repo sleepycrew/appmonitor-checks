@@ -2,3 +2,7 @@ github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/godbus/dbus/v5 v5.0.4 h1:9349emZab16e7zQvpmsbtjc18ykshndd8y2PG3sgJbA=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/sleepycrew/appmonitor-client v0.0.0-20231120173411-12ae43af9afe h1:Qe1G9rJKsRlB1FiwAbbFyiCscHuypGEE6Ex7uAVaxLM=
+github.com/sleepycrew/appmonitor-client v0.0.0-20231120173411-12ae43af9afe/go.mod h1:U6Q1/Ep+FDvqUWeARu2HRSrzjFxw/unySPBZyA74kH8=
